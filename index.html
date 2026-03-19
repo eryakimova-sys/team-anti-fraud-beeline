@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FMC Дубли: Проверка фрода</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+    --primary: #1E1E1E;
+    --text: #666666;
+    --bg: #F8F9FA;
+    --bg-card: #FFFFFF;
+    --border: #E0E0E0;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.2s ease;
+    --font: 'Beeline Std', 'Beeline Text', 'Beeline Sans', 'Inter', sans-serif;
+    --font-size: 14px;
+    --header-size: 16px;
+  }
+  
+  /* Темная тема */
+  [data-theme="dark"] {
+    --primary: #1E1E1E;
+    --text: #E0E0E0;
+    --bg: #121212;
+    --bg-card: #1E1E1E;
+    --border: #333333;
+    --shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font);
+    font-size: var(--font-size);
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Шапка */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background-color: var(--bg);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  
+  .logo {
+    font-weight: 700;
+    font-size: 1.2em;
+    letter-spacing: 0.5px;
+    color: var(--primary);
+    font-family: var(--font);
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9em;
+  }
+  
+  .role {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 500;
+    font-family: var(--font);
+  }
+  
+  .btn-icon {
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 4px;
+    transition: var(--transition);
+    font-family: var(--font);
+  }
+  
+  .btn-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Меню */
+  .top-nav {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  
+  .top-nav button {
+    padding: 8px 12px;
+    background-color: var(--bg-card);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: var(--transition);
+    font-family: var(--font);
+    letter-spacing: 0.5px;
+  }
+  
+  .top-nav button:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  /* Контейнер */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    margin-bottom: 16px;
+    color: var(--primary);
+    font-size: var(--header-size);
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.5px;
+    font-family: var(--font);
+  }
+  
+  /* Статистика */
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .stat-card {
+    background-color: var(--bg-card);
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    min-width: 100px;
+    text-align: center;
+    font-size: 0.9em;
+    font-family: var(--font);
+  }
+  
+  .stat-card span {
+    display: block;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  /* Загрузка */
+  .upload-area {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .btn-primary {
+    background-color: var(--bg-card);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font);
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  /* Таблица */
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  
+  #claims-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+  
+  #claims-table th,
+  #claims-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9em;
+    letter-spacing: 0.3px;
+    font-family: var(--font);
+  }
+  
+  #claims-table th {
+    background-color: var(--bg);
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  #claims-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  
+  /* Статусы */
+  .status {
+    display: inline-block;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: var(--font);
+  }
+  
+  .status.success { background-color: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+  .status.error { background-color: rgba(244, 67, 54, 0.2); color: #F44336; }
+  .status.warning { background-color: rgba(255, 193, 7, 0.2); color: #FFC107; }
+  
+  /* Индикатор сохранения */
+  .save-indicator {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    background-color: var(--primary);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1001;
+    transform: translateX(80px);
+  }
+  
+  .save-indicator.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .header {
+      padding: 12px 16px;
+    }
+  
+    .top-nav {
+      padding: 8px 16px;
+    }
+  
+    .stats {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .stat-card {
+      min-width: auto;
+      width: 100%;
+      max-width: 280px;
+    }
+  
+    .btn-primary {
+      padding: 8px 14px;
+      font-size: 0.85em;
+    }
+  
+    h1 {
+      font-size: 1.2em;
+    }
+  }
+    /* === Адаптивная таблица с горизонтальным скроллом (облегчённая версия) === */
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #claims-table {
+      width: 100%;
+      table-layout: auto;
+      border-collapse: collapse;
+      min-width: 100%;
+      font-size: 13px;
+    }
+
+    #claims-table th,
+    #claims-table td {
+      padding: 10px 8px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* === Фиксированные ширины колонок === */
+    #claims-table th:nth-child(1),
+    #claims-table td:nth-child(1) {
+      width: 100px;
+    }
+
+    #claims-table th:nth-child(2),
+    #claims-table td:nth-child(2) {
+      width: 120px;
+    }
+
+    #claims-table th:nth-child(3),
+    #claims-table td:nth-child(3) {
+      width: 120px;
+    }
+
+    #claims-table th:nth-child(4),
+    #claims-table td:nth-child(4) {
+      width: 120px;
+    }
+
+    #claims-table th:nth-child(5),
+    #claims-table td:nth-child(5) {
+      width: 120px;
+    }
+
+    #claims-table th:nth-child(6),
+    #claims-table td:nth-child(6) {
+      width: 150px;
+    }
+
+    #claims-table th:nth-child(7),
+    #claims-table td:nth-child(7) {
+      width: 180px;
+    }
+
+    #claims-table th:nth-child(8),
+    #claims-table td:nth-child(8) {
+      width: 100px;
+    }
+
+    #claims-table th:nth-child(9),
+    #claims-table td:nth-child(9) {
+      width: 140px;
+    }
+
+    #claims-table th:nth-child(10),
+    #claims-table td:nth-child(10) {
+      width: 220px;
+      position: relative;
+    }
+
+    #claims-table th:nth-child(11),
+    #claims-table td:nth-child(11) {
+      width: 120px;
+    }
+
+    /* === Поле ввода: работает, не вылезает === */
+    #claims-table td:nth-child(10) input {
+      width: 100%;
+      height: 100%;
+      padding: 6px 4px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      background-color: #fff;
+      outline: none;
+      resize: none;
+    }
+
+    #claims-table td:nth-child(10) input:focus {
+      border-color: #FFC800;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+    }
+
+    /* === Заголовки === */
+    #claims-table th {
+      background-color: #f4f6f9;
+      font-weight: 600;
+      color: #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 2px solid #FFC800;
+      font-size: 13px;
+    }
+
+    /* === Индикатор сохранения === */
+    .save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        padding: 15px;
+      }
+      #claims-table th,
+      #claims-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+      }
+    }
+   /* === Единый стиль для всех полей ввода (мягкий квадрат) === */
+input[type="text"] {
+  width: 100%;
+  height: 100%;
+  padding: 8px 10px; /* Одинаковые отступы */
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Мягкие скруглённые углы */
+  font-size: 13px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"]:focus {
+  border-color: #FFC800;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2), 0 2px 6px rgba(0, 123, 255, 0.1);
+  background-color: #fff;
+}
+/* === Подключение шрифта Beeline === */
+@import url('https://fonts.googleapis.com/css2?family=Beeline+Display:wght@400;500;600;700&display=swap');
+
+/* === Единый стиль для всех полей: "мягкий квадрат" (с жёлтым фокусом) === */
+input[type="text"],
+select {
+  width: 100%;
+  height: 100%;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 13px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: 'Beeline Display', sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: #FFC800; /* 🟨 Жёлтая граница */
+  box-shadow: 0 0 0 2px rgba(255, 200, 0, 0.2), 0 2px 6px rgba(255, 200, 0, 0.1); /* 🟨 Жёлтая тень */
+  background-color: #fff;
+}
+  </style>
+</head>
+<body>
+  <!-- Шапка -->
+  <header class="header">
+    <div class="logo">Билайн</div>
+    <div class="user-info">
+      <span>Иван Иванов</span>
+      <span class="role">Редактор</span>
+    </div>
+  </header>
+
+  <!-- Меню -->
+  <nav class="top-nav">
+    <button id="upload-btn">Загрузить</button>
+    <button id="filters-btn">Фильтры</button>
+    <button id="export-btn">Экспорт в Excel</button>
+    <button id="help-btn">Помощь</button>
+  </nav>
+
+  <!-- Основной контент -->
+  <main class="container">
+    <h1>Проверка дублирующих заявок (Фрод)</h1>
+
+    <!-- Статистика -->
+    <div class="stats">
+      <div class="stat-card">Всего: <span id="total">0</span></div>
+      <div class="stat-card">Подтверждено: <span id="confirmed">0</span></div>
+      <div class="stat-card">Дубли: <span id="duplicates">0</span></div>
+      <div class="stat-card">На проверке: <span id="pending">0</span></div>
+    </div>
+
+    <!-- Кнопка загрузки -->
+    <div class="upload-area">
+      <button id="load-btn" class="btn-primary">Загрузить данные (XLSX)</button>
+      <input type="file" id="file-input" accept=".xlsx" style="display:none;" />
+    </div>
+
+    <!-- Таблица заявок -->
+    <div class="table-container">
+      <table id="claims-table">
+        <thead>
+          <tr>
+            <th>Статус проверки</th>
+            <th>Первая заявка</th>
+            <th>Дублирующая заявка</th>
+            <th>Канал продаж первой</th>
+            <th>Канал продаж дубля</th>
+            <th>Причина фрода (автоматически)</th>
+            <th>Автоматический комментарий</th>
+            <th>Фрод подтверждён</th>
+            <th>Ответственный</th>
+            <th>Комментарий проверяющего</th>
+            <th>Добавлено</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Индикатор сохранения -->
+    <div id="save-indicator" class="save-indicator">Сохранено: сейчас</div>
+  </main>
+
+  <!-- Подключение XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Скрипт приложения -->
+  <script>
+    window.onload = function () {
+      let claims = [];
+      let originalClaims = [];
+
+      document.getElementById('load-btn').addEventListener('click', () => {
+        document.getElementById('file-input').click();
+      });
+
+      document.getElementById('file-input').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          const headers = json[0];
+          const rows = json.slice(1);
+
+          const newClaims = rows.map(row => {
+            const obj = {};
+            headers.forEach((h, i) => {
+              obj[h] = row[i] || '';
+            });
+            obj['status'] = 'На проверке';
+            return obj;
+          });
+
+          claims = newClaims;
+          originalClaims = [...claims];
+          renderTable();
+          updateStats();
+          showSaveIndicator();
+        };
+
+        reader.readAsArrayBuffer(file);
+      });
+
+      function renderTable() {
+        const tbody = document.querySelector('#claims-table tbody');
+        tbody.innerHTML = '';
+
+        claims.forEach((claim, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${claim['Статус проверки']}</td>
+            <td>${claim['Первая заявка']}</td>
+            <td>${claim['Дублирующая заявка']}</td>
+            <td>${claim['Канал продаж первой заявки']}</td>
+            <td>${claim['Канал продаж дубля']}</td>
+            <td>${claim['Причина фрода (автоматически)']}</td>
+            <td>${claim['Автоматический комментарий']}</td>
+            <td>
+              <select class="status-select" data-index="${index}" ${!claim['Дублирующая заявка'] ? 'disabled' : ''}>
+                <option value="None" ${claim['Фрод подтверждён'] === 'None' ? 'selected' : ''}>None</option>
+                <option value="Да" ${claim['Фрод подтверждён'] === 'Да' ? 'selected' : ''}>Да</option>
+                <option value="Нет" ${claim['Фрод подтверждён'] === 'Нет' ? 'selected' : ''}>Нет</option>
+              </select>
+            </td>
+            <td>
+              <input type="text" class="responsible" data-index="${index}" value="${claim['Ответственный за проверку']}" ${!claim['Дублирующая заявка'] ? 'readonly' : ''}>
+            </td>
+            <td>
+              <input type="text" class="comment" data-index="${index}" value="${claim['Комментарий проверяющего']}" ${!claim['Дублирующая заявка'] ? 'readonly' : ''}>
+            </td>
+            <td>${claim['Добавлено']}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.status-select').forEach(el => {
+          el.addEventListener('change', e => {
+            const index = e.target.dataset.index;
+            claims[index]['Фрод подтверждён'] = e.target.value;
+            showSaveIndicator();
+          });
+        });
+
+        document.querySelectorAll('.responsible').forEach(el => {
+          el.addEventListener('input', e => {
+            const index = e.target.dataset.index;
+            claims[index]['Ответственный за проверку'] = e.target.value;
+            showSaveIndicator();
+          });
+        });
+
+        document.querySelectorAll('.comment').forEach(el => {
+          el.addEventListener('input', e => {
+            const index = e.target.dataset.index;
+            claims[index]['Комментарий проверяющего'] = e.target.value;
+            showSaveIndicator();
+          });
+        });
+      }
+
+      function updateStats() {
+        const total = claims.length;
+        const confirmed = claims.filter(c => c['Фрод подтверждён'] === 'Да').length;
+        const duplicates = claims.filter(c => c['Фрод подтверждён'] === 'Нет').length;
+        const pending = claims.filter(c => c['Фрод подтверждён'] === 'None').length;
+
+        document.getElementById('total').textContent = total;
+        document.getElementById('confirmed').textContent = confirmed;
+        document.getElementById('duplicates').textContent = duplicates;
+        document.getElementById('pending').textContent = pending;
+      }
+
+      function showSaveIndicator() {
+        const indicator = document.getElementById('save-indicator');
+        indicator.classList.add('show');
+        setTimeout(() => {
+          indicator.classList.remove('show');
+        }, 2000);
+      }
+
+      document.getElementById('export-btn').addEventListener('click', () => {
+        const ws = XLSX.utils.json_to_sheet(claims.map(c => ({
+          'Статус проверки': c['Статус проверки'],
+          'Первая заявка': c['Первая заявка'],
+          'Дублирующая заявка': c['Дублирующая заявка'],
+          'Канал продаж первой заявки': c['Канал продаж первой заявки'],
+          'Канал продаж дубля': c['Канал продаж дубля'],
+          'Причина фрода (автоматически)': c['Причина фрода (автоматически)'],
+          'Автоматический комментарий': c['Автоматический комментарий'],
+          'Фрод подтверждён': c['Фрод подтверждён'],
+          'Ответственный за проверку': c['Ответственный за проверку'],
+          'Комментарий проверяющего': c['Комментарий проверяющего'],
+          'Добавлено': c['Добавлено']
+        })));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Дубли Фрод');
+        XLSX.writeFile(wb, `fmc_fraud_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+      });
+
+      document.body.dataset.theme = 'light';
+    };
+  </script>
+</body>
+</html>
